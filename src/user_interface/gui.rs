@@ -62,10 +62,10 @@ impl ImguiManager {
                     oversample_h: 3,
                     oversample_v: 3,
                     glyph_ranges: imgui::FontGlyphRanges::from_slice(&[
-                        0x0020 as u16,
-                        0x00FF as u16,
-                        0x03B8 as u16, // for Greek theta
-                        0x03B8 as u16, // for Greek theta
+                        0x0020 as u32,
+                        0x00FF as u32,
+                        0x03B8 as u32, // for Greek theta
+                        0x03B8 as u32, // for Greek theta
                         0,
                     ]),
                     ..Default::default()
@@ -76,8 +76,8 @@ impl ImguiManager {
                 size_pixels: icon_font_size,
                 config: Some(imgui::FontConfig {
                     glyph_ranges: imgui::FontGlyphRanges::from_slice(&[
-                        0xF000 as u16,
-                        0xF100 as u16,
+                        0xF000 as u32,
+                        0xF100 as u32,
                         0,
                     ]),
                     ..Default::default()
@@ -100,8 +100,8 @@ impl ImguiManager {
                 size_pixels: 28.,
                 config: Some(imgui::FontConfig {
                     glyph_ranges: imgui::FontGlyphRanges::from_slice(&[
-                        0xF000 as u16,
-                        0xF100 as u16,
+                        0xF000 as u32,
+                        0xF100 as u32,
                         0,
                     ]),
                     ..Default::default()
@@ -132,15 +132,15 @@ impl ImguiManager {
             pop_me = Some(ui.push_style_color(imgui::StyleColor::Button, [0., 0., 0., 0.2]));
         }
         // Icons are always constant so this is not really unsafe.
-        ui.button(
+        ui.button_with_size(
             unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icon) },
             [0., 30.],
         );
-        if ui.is_item_clicked(imgui::MouseButton::Left) {
+        if ui.is_item_clicked() {
             v.set_tool(mode);
         }
         if let Some(p) = pop_me {
-            p.pop(ui);
+            p.pop();
         }
     }
     
@@ -150,22 +150,22 @@ impl ImguiManager {
     
         let pop_me = ui.push_style_color(imgui::StyleColor::Button, [0., 0., 0., 0.2]);
     
-        ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::PLUS) }, [0., 0.]);
+        ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::PLUS) }, [0., 0.]);
         //ui.push_item_width(-0.5);
-        if ui.is_item_clicked(imgui::MouseButton::Left) {
+        if ui.is_item_clicked() {
             v.new_layer();
         }
     
-        ui.same_line(0.);
-        ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::MINUS) }, [0., 0.]);
+        ui.same_line();
+        ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::MINUS) }, [0., 0.]);
         ui.push_item_width(-0.5);
-        if ui.is_item_clicked(imgui::MouseButton::Left) {
+        if ui.is_item_clicked() {
             v.delete_layer(active_layer, true);
         }
     
-        ui.same_line(0.);
-        ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::ARROWUP) }, [0., 0.]);
-        if ui.is_item_clicked(imgui::MouseButton::Left) {
+        ui.same_line();
+        ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::ARROWUP) }, [0., 0.]);
+        if ui.is_item_clicked() {
             if active_layer != 0 {
                 let _start_layer_type = v.with_glyph(|glif| glif.layers[active_layer].operation.clone());
                 let _target_layer_type = v.with_glyph(|glif| glif.layers[active_layer-1].operation.clone());
@@ -175,15 +175,15 @@ impl ImguiManager {
         }
     
         let layer_count = v.get_layer_count();
-        ui.same_line(0.);
-        ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::ARROWDOWN) }, [0., 0.]);
-        if ui.is_item_clicked(imgui::MouseButton::Left) {
+        ui.same_line();
+        ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::ARROWDOWN) }, [0., 0.]);
+        if ui.is_item_clicked() {
             if active_layer != layer_count-1 {
                 v.swap_layers(active_layer, active_layer+1, true);
             }
         }
     
-        pop_me.pop(ui);
+        pop_me.pop();
         
         ui.separator();
     
@@ -198,12 +198,12 @@ impl ImguiManager {
     
             if layer_op.is_some() {
                 ui.dummy([28., 0.]);
-                ui.same_line(0.);
+                ui.same_line();
             }
             let layer_visible = v.with_glyph(|glif| glif.layers[layer].visible);
             let eye_con = if layer_visible { icons::OPENEYE } else { icons::CLOSEDEYE };
-            ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(eye_con) }, [0., 0.]);
-            if ui.is_item_clicked(imgui::MouseButton::Left) {
+            ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(eye_con) }, [0., 0.]);
+            if ui.is_item_clicked() {
                 let active_layer = v.get_active_layer();
                 v.set_active_layer(layer);
     
@@ -214,9 +214,9 @@ impl ImguiManager {
                 v.set_active_layer(active_layer);
             }
     
-            ui.same_line(0.);
-            ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::RENAME) }, [0., 0.]);
-            if ui.is_item_clicked(imgui::MouseButton::Left) {
+            ui.same_line();
+            ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icons::RENAME) }, [0., 0.]);
+            if ui.is_item_clicked() {
                 i.push_prompt(InputPrompt::Text {
                     label: "Layer name:".to_string(),
                     default: v.with_glyph(|glif| glif.layers[layer].name.clone()),
@@ -232,7 +232,7 @@ impl ImguiManager {
                     }),
                 });
             }
-            ui.same_line(0.);
+            ui.same_line();
             
             let current_operation = v.with_glyph(|glif| glif.layers[layer].operation.clone() );
             let icon =  match current_operation.as_ref() {
@@ -246,8 +246,8 @@ impl ImguiManager {
                 }
                 None => {icons::LAYERCOMBINE}
             };
-            ui.button(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icon) }, [0., 0.]);
-            if ui.is_item_clicked(imgui::MouseButton::Right) {
+            ui.button_with_size(unsafe { imgui::ImStr::from_utf8_with_nul_unchecked(icon) }, [0., 0.]);
+            if ui.is_item_clicked() {
                 let active_layer = v.get_active_layer();
                 v.set_active_layer(layer);
                 v.begin_layer_modification("Changed layer operation.");
@@ -257,7 +257,7 @@ impl ImguiManager {
                 v.end_layer_modification();
                 v.set_active_layer(active_layer);
             }
-            if ui.is_item_clicked(imgui::MouseButton::Left) {
+            if ui.is_item_clicked() {
                 let new_operation = match current_operation {
                     Some(op) => {
                         match op {
@@ -281,14 +281,14 @@ impl ImguiManager {
             }
     
             if layer_op.is_none() {
-                ui.same_line(0.);
+                ui.same_line();
                 let mut color_token: Option<ColorStackToken> = None;
                 let _default_color: Option<[f32; 4]> = None;
                 if let Some(color) = v.with_glyph(|glif| glif.layers[layer].color) {
                     color_token = Some(ui.push_style_color(imgui::StyleColor::Button, color.into()));
                 }
-                ui.button(imgui::im_str!("##"), [0., 0.]);
-                if ui.is_item_clicked(imgui::MouseButton::Left) {
+                ui.button_with_size(imgui::im_str!("##"), [0., 0.]);
+                if ui.is_item_clicked() {
                     i.push_prompt(InputPrompt::Color {
                         label: "Layer color:".to_string(),
                         default: v.with_glyph(|glif| glif.layers[layer].color.unwrap_or([0., 0., 0., 1.].into())).into(),
@@ -306,26 +306,26 @@ impl ImguiManager {
                 }
     
                 if let Some(token) = color_token {
-                    token.pop(ui);
+                    token.pop();
                 }
             }
     
-            font_token.pop(ui);
-            custom_button_color.pop(ui);
+            font_token.pop();
+            custom_button_color.pop();
     
-            ui.same_line(0.);
+            ui.same_line();
             let mut pop_me = None;
             if active_layer != layer {
                 pop_me = Some(ui.push_style_color(imgui::StyleColor::Button, [0., 0., 0., 0.2]));
             }
-            ui.button(&im_str, [-1., 0.]);
-            if ui.is_item_clicked(imgui::MouseButton::Left) {
+            ui.button_with_size(&im_str, [-1., 0.]);
+            if ui.is_item_clicked() {
                 v.set_active_layer(layer);
             }
             if let Some(p) = pop_me {
-                p.pop(ui);
+                p.pop();
             }
-            no_padding.pop(ui);
+            no_padding.pop();
         }
     }
     
@@ -399,7 +399,7 @@ impl ImguiManager {
         .size([i.viewport.winsize.0 as f32, i.viewport.winsize.1 as f32], imgui::Condition::Always)
         .build(ui, || {
             ui.invisible_button(&imgui::im_str!("##"), [-1., -1.]);
-            if ui.is_item_clicked(imgui::MouseButton::Right) {
+            if ui.is_item_clicked() {
                 i.pop_prompt();
             }
         });
@@ -465,8 +465,8 @@ impl ImguiManager {
                             i.pop_prompt();
                         }
     
-                        ui.button(imgui::im_str!("Automatic"), [0., 0.]);
-                        if ui.is_item_clicked(imgui::MouseButton::Left) {
+                        ui.button_with_size(imgui::im_str!("Automatic"), [0., 0.]);
+                        if ui.is_item_clicked() {
                             func(v, None);
                             i.pop_prompt();
                         }
@@ -501,22 +501,22 @@ impl ImguiManager {
                 
                         if layer_op.is_some() {
                             ui.dummy([28., 0.]);
-                            ui.same_line(0.);
+                            ui.same_line();
                         }
                 
                         let mut pop_me = None;
                         if v.get_active_layer() != layer {
                             pop_me = Some(ui.push_style_color(imgui::StyleColor::Button, [0., 0., 0., 0.2]));
                         }
-                        ui.button(&im_str, [-1., 0.]);
-                        if ui.is_item_clicked(imgui::MouseButton::Left) {
+                        ui.button_with_size(&im_str, [-1., 0.]);
+                        if ui.is_item_clicked() {
                             func(v, v.with_glyph(|glif| glif.layers[layer].clone() ));
                             i.pop_prompt();
                         }
                         if let Some(p) = pop_me {
-                            p.pop(ui);
+                            p.pop();
                         }
-                        no_padding.pop(ui);
+                        no_padding.pop();
                     }
                 });
             }

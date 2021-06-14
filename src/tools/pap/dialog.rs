@@ -206,7 +206,7 @@ impl PAP {
                     let mut new_x_scale = data.pattern_scale.0 as f32;
                     let mut new_y_scale = data.pattern_scale.1 as f32;
                     imgui_decimal_text_field("##", ui, &mut new_x_scale);
-                    ui.same_line(0.);
+                    ui.same_line();
                     imgui_decimal_text_field("Scale", ui, &mut new_y_scale);
 
                     if (new_x_scale as f64, new_y_scale as f64) != data.pattern_scale {
